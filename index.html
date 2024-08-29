@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Noa, My White Roses</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            overflow-x: hidden;
+        }
+        .container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            box-sizing: border-box;
+            opacity: 0;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://th.bing.com/th/id/OIP.a-F2UkPacOUVCtn28cvqpgHaEo?w=1920&h=1200&rs=1&pid=ImgDetMain') no-repeat center center;
+            background-size: cover;
+            filter: brightness(0.7);
+            z-index: -1;
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+        }
+        .album-container {
+            width: 80vw;
+            height: 60vh;
+            max-width: 800px;
+            max-height: 600px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .album-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .album-image.active {
+            opacity: 1;
+        }
+        .album-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        .album-nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .album-nav-dot.active {
+            background-color: #fff;
+        }
+        .message {
+            max-width: 600px;
+            background: rgba(255,255,255,0.8);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-top: 2rem;
+        }
+        #heart {
+            font-size: 3rem;
+            margin-top: 1rem;
+        }
+        .snowflake {
+            color: #fff;
+            font-size: 1em;
+            position: fixed;
+            top: -10%;
+            z-index: 9999;
+            user-select: none;
+            cursor: default;
+            animation-name: snowflakes-fall, snowflakes-shake;
+            animation-duration: 10s, 3s;
+            animation-timing-function: linear, ease-in-out;
+            animation-iteration-count: infinite, infinite;
+            animation-play-state: running, running;
+        }
+        @keyframes snowflakes-fall {
+            0% { top: -10%; }
+            100% { top: 100%; }
+        }
+        @keyframes snowflakes-shake {
+            0% { transform: translateX(0px); }
+            50% { transform: translateX(80px); }
+            100% { transform: translateX(0px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <h1>For Noa</h1>
+        <div class="album-container">
+        </div>
+        <div class="message">
+            <h2>My White Roses</h2>
+            <p>
+                Noa, each of these white roses represents a facet of my love for you. Pure, elegant, and breathtakingly beautiful, they mirror the grace you bring into my life. Your presence illuminates even the darkest days, and your love nurtures my soul. With each passing moment, my affection for you blooms anew, much like these eternal flowers that symbolize our timeless bond.
+            </p>
+            <div id="heart">🤍</div>
+        </div>
+    </div>
+
+    <script>
+        // Array of image URLs (replace with your actual URLs)
+        const imageUrls = [
+            'https://images.pexels.com/photos/160916/flower-rose-colorful-petals-160916.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+            'https://wallpapercave.com/wp/X8qhGDm.jpg',
+            'https://images.unsplash.com/photo-1607132266310-be7bd92ca029?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+            'https://images.unsplash.com/photo-1687432681938-a3ebc6e8c575?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+            'https://th.bing.com/th/id/R.9cff15ec3975b56cd8652d8eed72e48b?rik=5koNBxWBCd%2fm6Q&pid=ImgRaw&r=0'
+        ];
+
+        const albumContainer = document.querySelector('.album-container');
+        const navContainer = document.createElement('div');
+        navContainer.className = 'album-nav';
+
+        // Create image elements and nav dots
+        imageUrls.forEach((url, index) => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = `album-image ${index === 0 ? 'active' : ''}`;
+            img.alt = `White Rose ${index + 1}`;
+            albumContainer.appendChild(img);
+
+            const dot = document.createElement('div');
+            dot.className = `album-nav-dot ${index === 0 ? 'active' : ''}`;
+            dot.addEventListener('click', () => showImage(index));
+            navContainer.appendChild(dot);
+        });
+
+        albumContainer.appendChild(navContainer);
+
+        let currentIndex = 0;
+
+        function showImage(index) {
+            gsap.to(`.album-image`, {opacity: 0, duration: 0.5});
+            gsap.to(`.album-image:nth-child(${index + 1})`, {opacity: 1, duration: 0.5});
+            document.querySelectorAll('.album-nav-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+            currentIndex = index;
+        }
+
+        function nextImage() {
+            showImage((currentIndex + 1) % imageUrls.length);
+        }
+
+        // Auto-advance images every 5 seconds
+        setInterval(nextImage, 5000);
+
+        // Create snowflakes
+        const snowflakesCount = 50;
+        const container = document.body;
+        for (let i = 0; i < snowflakesCount; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = `${Math.random() * 100}vw`;
+            snowflake.style.animationDelay = `${Math.random() * 10}s`;
+            container.appendChild(snowflake);
+        }
+
+        // GSAP Animations
+        gsap.to(".container", {opacity: 1, duration: 2, ease: "power2.inOut"});
+        gsap.from("h1", {opacity: 0, y: -50, duration: 1, delay: 0.5});
+        gsap.from(".album-container", {opacity: 0, scale: 0.9, duration: 1, delay: 1, ease: "back.out(1.7)"});
+        gsap.from(".message", {opacity: 0, y: 50, duration: 1, delay: 1.5});
+        gsap.to("#heart", {
+            scale: 1.2,
+            yoyo: true,
+            repeat: -1,
+            duration: 1,
+            ease: "power1.inOut"
+        });
+
+        // Album hover effect
+        albumContainer.addEventListener('mouseover', () => {
+            gsap.to(albumContainer, {scale: 1.02, duration: 0.3});
+        });
+        albumContainer.addEventListener('mouseout', () => {
+            gsap.to(albumContainer, {scale: 1, duration: 0.3});
+        });
+    </script>
+</body>
+</html>
